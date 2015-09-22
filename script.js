@@ -9,8 +9,8 @@
 		var canvas, ctx;
 		var audioElement, analyserNode;
 		var circleRadius;
-		var effectColor;
-		
+		var strokeColor;
+		var fillColor;
 		
 		//Init - function called when the page is loaded
 		function init(){
@@ -19,7 +19,8 @@
 			// set up canvas stuff
 			canvas = document.querySelector('canvas');
 			ctx = canvas.getContext("2d");
-			effectColor = 'rgba(0, 255, 0, 0.6)';
+			strokeColor = 'rgba(0, 255, 0, 0.6)';
+			fillColor = 'rgba(255, 0, 255, 0.6)';
 			
 			// get reference to <audio> element on page
 			audioElement = document.querySelector('audio');
@@ -90,8 +91,14 @@
 			document.querySelector("#bGColor").onchange = function(e){
 				canvas.style.backgroundColor = e.target.value;
 			};
-			document.querySelector("#eColor").onchange = function(e){
-				effectColor = e.target.value;
+			document.querySelector("#sColor").onchange = function(e){
+				strokeColor = e.target.value;
+			};
+			document.querySelector("#fColor").onchange = function(e){
+				fillColor = e.target.value;
+			};
+			document.querySelector("#radiusSlider").onchange = function(e){
+				circleRadius = e.target.value * 2;
 			};
 		}
 		
@@ -127,7 +134,7 @@
 			
 			ctx.save();
 			ctx.lineWidth = 3;
-			ctx.strokeStyle = effectColor;
+			ctx.strokeStyle = strokeColor;
 			for(var i = 0; i < data.length; i++)
 			{
 				//default line
@@ -141,17 +148,16 @@
 				{
 					ctx.lineTo((i + 1) * space, 750 - data[i + 1]);
 				}
-				ctx.strokeStyle = makeColor(255,0,0,data[NUM_SAMPLES / 4].map(0,255,0,1));
+				//ctx.strokeStyle = makeColor(255,0,0,data[NUM_SAMPLES / 4].map(0,255,0,1));
 				ctx.stroke();
 				ctx.closePath();
 				
 				//Circle
-				ctx.fillStyle = makeColor(0,255,0,.5);
+				ctx.fillStyle = fillColor;
 				ctx.beginPath();
 				ctx.arc(canvas.width/2, canvas.height/2, circleRadius * (data[i] / 10), 0, Math.PI * 2, false);
 				ctx.fill();
 				ctx.closePath();
-				
 			}
 			ctx.restore();
 			
