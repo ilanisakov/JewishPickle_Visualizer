@@ -9,6 +9,7 @@
 		var canvas, ctx;
 		var audioElement, analyserNode;
 		var circleRadius;
+		var effectColor;
 		
 		
 		//Init - function called when the page is loaded
@@ -18,7 +19,7 @@
 			// set up canvas stuff
 			canvas = document.querySelector('canvas');
 			ctx = canvas.getContext("2d");
-			
+			effectColor = 'rgba(0, 255, 0, 0.6)';
 			
 			// get reference to <audio> element on page
 			audioElement = document.querySelector('audio');
@@ -26,7 +27,7 @@
 			// call our helper function and get an analyser node
 			analyserNode = createWebAudioContextWithAnalyserNode(audioElement);
 			
-			// get sound track <select> and Full Screen button working
+			//Get all our controls working
 			setupUI();
 			
 			// load and play default sound into audio element
@@ -83,7 +84,15 @@
 		
 		//Sets up the functions for the whole UI
 		function setupUI(){
-
+			document.querySelector("#songSelect").onchange = function(e){
+				playStream(audioElement,e.target.value);
+			};
+			document.querySelector("#bGColor").onchange = function(e){
+				canvas.style.backgroundColor = e.target.value;
+			};
+			document.querySelector("#eColor").onchange = function(e){
+				effectColor = e.target.value;
+			};
 		}
 		
 		function playStream(audioElement,path){
@@ -99,6 +108,11 @@
    			return color;
 		}
 		
+		//function bGColorChange(e)
+		//{
+		//	console.log('bgcolor');
+		//	canvas.style.backgroundColor = e.value;
+		//}
 		
 		//Update Loop
 		function update() {
@@ -112,9 +126,8 @@
 			ctx.clearRect(0,0,1280,800);
 			
 			ctx.save();
-			ctx.strokeStyle = 'rgba(0,255,0,.6)';
 			ctx.lineWidth = 3;
-			
+			ctx.strokeStyle = effectColor;
 			for(var i = 0; i < data.length; i++)
 			{
 				//default line

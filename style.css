@@ -2,6 +2,9 @@ canvas{
 	background-color: black;
 	float:left;
 }
+section{
+	padding-bottom: 5px;
+}
 #controls{
 	float: left;
 	margin-left: 10px;
