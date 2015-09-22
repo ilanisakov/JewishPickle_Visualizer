@@ -1,0 +1,8 @@
+canvas{
+	background-color: black;
+	float:left;
+}
+#controls{
+	float: left;
+	margin-left: 10px;
+}

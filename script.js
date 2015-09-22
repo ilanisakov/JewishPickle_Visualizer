@@ -2,7 +2,8 @@
 		"use strict";
 		
 		//CONSTANTS
-		var NUM_SAMPLES = 256;
+		var NUM_SAMPLES = 1024;
+		var SOUND_1 = 'media/Touch The Sky.mp3';
 		
 		//VARIABLES
 		var canvas, ctx;
@@ -11,9 +12,12 @@
 		
 		//Init - function called when the page is loaded
 		function init(){
+			console.log("test1");
+			
 			// set up canvas stuff
 			canvas = document.querySelector('canvas');
 			ctx = canvas.getContext("2d");
+			
 			
 			// get reference to <audio> element on page
 			audioElement = document.querySelector('audio');
@@ -25,7 +29,7 @@
 			setupUI();
 			
 			// load and play default sound into audio element
-			//playStream(audioElement,SOUND_1);
+			playStream(audioElement,SOUND_1);
 			
 			// start animation loop
 			update();
@@ -58,15 +62,15 @@
 			sourceNode.connect(analyserNode);
 						
 			//create DelayNode instance
-			delayNode = audioCtx.createDelay();
-			delayNode.delayTime.value = delayAmount;
+			//delayNode = audioCtx.createDelay();
+			//delayNode.delayTime.value = delayAmount;
 			
 			// here we connect to the destination i.e. speakers
 			//analyserNode.connect(audioCtx.destination);
 			
 			sourceNode.connect(audioCtx.destination);
-			sourceNode.connect(delayNode);
-			delayNode.connect(analyserNode);
+			//sourceNode.connect(delayNode);
+			//delayNode.connect(analyserNode);
 			analyserNode.connect(audioCtx.destination);
 			return analyserNode;
 		}
@@ -76,9 +80,45 @@
 			
 		}
 		
+		function playStream(audioElement,path){
+			audioElement.src = path;
+			audioElement.play();
+			audioElement.volume = 0.2;
+			//document.querySelector('#status').innerHTML = "Now playing: " + path;
+		}
+		
 		//Update Loop
 		function update() {
 			requestAnimationFrame(update);
+			var data = new Uint8Array(NUM_SAMPLES/2);
+			var space = canvas.width / data.length;
+			
+			
+			
+			analyserNode.getByteFrequencyData(data);
+			
+			
+			ctx.clearRect(0,0,1280,800);
+			
+			ctx.save();
+			ctx.strokeStyle = 'rgba(0,255,0,.6)';
+			for(var i = 0; i < data.length; i++)
+			{
+				//default line
+				ctx.beginPath();
+				ctx.moveTo(i * space, 750 - data[i]);
+				if (i == (NUM_SAMPLES / 2) - 1)
+				{
+					ctx.lineTo(canvas.width, 750 - data[i]);
+				}
+				else
+				{
+					ctx.lineTo((i + 1) * space, 750 - data[i + 1]);
+				}
+				ctx.stroke();
+				ctx.closePath();
+			}
+			ctx.restore();
 			
 		}
 		window.addEventListener("load",init);
