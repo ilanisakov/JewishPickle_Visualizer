@@ -119,7 +119,7 @@
 			requestAnimationFrame(update);
 			var data = new Uint8Array(NUM_SAMPLES/2);
 			var space = canvas.width / data.length;
-			circleRadius = 10;
+			circleRadius = 20;
 			
 			analyserNode.getByteFrequencyData(data);
 						
@@ -141,17 +141,20 @@
 				{
 					ctx.lineTo((i + 1) * space, 750 - data[i + 1]);
 				}
-				ctx.strokeStyle = makeColor(255,0,0,data[NUM_SAMPLES / 4].map(0,255,0,1));
+				//ctx.strokeStyle = makeColor(255,0,0,data[NUM_SAMPLES / 4].map(0,255,0,1));
 				ctx.stroke();
 				ctx.closePath();
 				
 				//Circle
+				ctx.save();
 				ctx.fillStyle = makeColor(0,255,0,.5);
 				ctx.beginPath();
-				ctx.arc(canvas.width/2, canvas.height/2, circleRadius * (data[i] / 10), 0, Math.PI * 2, false);
+				ctx.arc(canvas.width/2, canvas.height/2, circleRadius * (data[i] / 15), 0, Math.PI * 2, false);
+				ctx.fillStyle = makeColor(data[i],0,0,data[i].map(0,255,0,1));
+				//ctx.globalAlpha = data[i].map(0,255,0,1);
 				ctx.fill();
 				ctx.closePath();
-				
+				ctx.restore();
 			}
 			ctx.restore();
 			
