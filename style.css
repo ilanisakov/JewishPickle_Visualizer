@@ -1,9 +1,13 @@
 canvas{
 	background-color: black;
 	float:left;
+	border: 2px solid black;
 }
 section{
 	padding-bottom: 5px;
+}
+h2{
+	margin-bottom: 3px;
 }
 #controls{
 	float: left;
