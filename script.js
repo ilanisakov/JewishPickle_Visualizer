@@ -8,6 +8,7 @@
 		//VARIABLES
 		var canvas, ctx;
 		var audioElement, analyserNode;
+		var circleRadius;
 		
 		
 		//Init - function called when the page is loaded
@@ -30,6 +31,11 @@
 			
 			// load and play default sound into audio element
 			playStream(audioElement,SOUND_1);
+			
+			//setup map function
+			Number.prototype.map = function (in_min, in_max, out_min, out_max) {
+				return (this - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
+			}
 			
 			// start animation loop
 			update();
@@ -77,7 +83,7 @@
 		
 		//Sets up the functions for the whole UI
 		function setupUI(){
-			
+
 		}
 		
 		function playStream(audioElement,path){
@@ -87,21 +93,28 @@
 			//document.querySelector('#status').innerHTML = "Now playing: " + path;
 		}
 		
+		// HELPER
+		function makeColor(red, green, blue, alpha){
+   			var color='rgba('+red+','+green+','+blue+', '+alpha+')';
+   			return color;
+		}
+		
+		
 		//Update Loop
 		function update() {
 			requestAnimationFrame(update);
 			var data = new Uint8Array(NUM_SAMPLES/2);
 			var space = canvas.width / data.length;
-			
-			
+			circleRadius = 10;
 			
 			analyserNode.getByteFrequencyData(data);
-			
-			
+						
 			ctx.clearRect(0,0,1280,800);
 			
 			ctx.save();
 			ctx.strokeStyle = 'rgba(0,255,0,.6)';
+			ctx.lineWidth = 3;
+			
 			for(var i = 0; i < data.length; i++)
 			{
 				//default line
@@ -115,8 +128,17 @@
 				{
 					ctx.lineTo((i + 1) * space, 750 - data[i + 1]);
 				}
+				ctx.strokeStyle = makeColor(255,0,0,data[NUM_SAMPLES / 4].map(0,255,0,1));
 				ctx.stroke();
 				ctx.closePath();
+				
+				//Circle
+				ctx.fillStyle = makeColor(0,255,0,.5);
+				ctx.beginPath();
+				ctx.arc(canvas.width/2, canvas.height/2, circleRadius * (data[i] / 10), 0, Math.PI * 2, false);
+				ctx.fill();
+				ctx.closePath();
+				
 			}
 			ctx.restore();
 			
