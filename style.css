@@ -1,6 +1,19 @@
-canvas{
-	background-color: black;
-	float:left;
+#canvas1{
+	opacity: 0.99;
+	position:absolute;
+	z-index:0;
+}
+#canvas2{
+	opacity: .8;
+	position: absolute;
+	z-index:1;
+}
+#bCanvas{
+	background-color:black;
+	border: 2px solid black;
+}
+#canvas{
+	
 	border: 2px solid black;
 }
 section{
@@ -10,6 +23,6 @@ h2{
 	margin-bottom: 3px;
 }
 #controls{
-	float: left;
+	float: right;
 	margin-left: 10px;
 }

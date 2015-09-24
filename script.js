@@ -3,24 +3,30 @@
 		
 		//CONSTANTS
 		var NUM_SAMPLES = 1024;
+		var SCREEN_RADIUS = 755;
 		var SOUND_1 = 'media/Touch The Sky.mp3';
 		
 		//VARIABLES
-		var canvas, ctx;
+		var canvas, ctx, canvas2, ctx2;
 		var audioElement, analyserNode;
 		var circleRadius;
 		var strokeColor;
 		var fillColor;
+		var angle;
 		
 		//Init - function called when the page is loaded
 		function init(){
 			console.log("test1");
 			
 			// set up canvas stuff
-			canvas = document.querySelector('canvas');
+			canvas = document.querySelector('#canvas');
 			ctx = canvas.getContext("2d");
+			canvas2 = document.querySelector('#bCanvas');
+			ctx2 = canvas2.getContext("2d");
 			strokeColor = 'rgba(0, 255, 0, 0.6)';
 			fillColor = 'rgba(255, 0, 255, 0.6)';
+			circleRadius = 10;
+			angle=0;
 			
 			// get reference to <audio> element on page
 			audioElement = document.querySelector('audio');
@@ -89,7 +95,7 @@
 				playStream(audioElement,e.target.value);
 			};
 			document.querySelector("#bGColor").onchange = function(e){
-				canvas.style.backgroundColor = e.target.value;
+				canvas2.style.backgroundColor = e.target.value;
 			};
 			document.querySelector("#sColor").onchange = function(e){
 				strokeColor = e.target.value;
@@ -126,11 +132,11 @@
 			requestAnimationFrame(update);
 			var data = new Uint8Array(NUM_SAMPLES/2);
 			var space = canvas.width / data.length;
-			circleRadius = 20;
+			
 			
 			analyserNode.getByteFrequencyData(data);
 						
-			ctx.clearRect(0,0,1280,800);
+			ctx.clearRect(0,0,1280,800);//clearing the top canvas
 			
 			ctx.save();
 			ctx.lineWidth = 3;
@@ -164,7 +170,33 @@
 				ctx.restore();
 			}
 			ctx.restore();
+			console.log(data[2] > 250 ? "yes" : "");
+			var temp = data[2];
+			drawBottom(temp);
 			
+		}
+		
+		function drawTop(){
+		}
+		
+		function drawBottom(g){
+			if( g > 250) {ctx2.strokeStyle = makeColor(0, 0, 0, 0.3);}
+			else if(g > 225){ctx2.strokeStyle = makeColor(g, 0, g, 0.3);}
+			else if( g > 215) {ctx2.strokeStyle = makeColor(g, g, 0, 0.3);}
+			else if(g > 200){ctx2.strokeStyle = makeColor(0, g, 0, 0.3);}
+			else if( g > 195) {ctx2.strokeStyle = makeColor(g, 0, 0, 0.3);}
+			else if( g > 180) {ctx2.strokeStyle = makeColor(0, 0, g, 0.3);}
+			else {ctx2.strokeStyle = makeColor(0, g, g, 0.3);}
+			//ctx2.strokeStyle = makeColor(0, g, 0, 0.3);
+			ctx2.lineWidth = 3;
+			for(var i = 0; i < 3; i++){
+				ctx2.beginPath();
+				ctx2.moveTo(canvas2.width/2, canvas2.height / 2);
+				ctx2.lineTo(SCREEN_RADIUS * Math.cos(angle + (i*90)) + canvas2.width / 2, SCREEN_RADIUS * Math.sin(angle + (i*90)) + canvas2.height / 2);
+				ctx2.stroke();
+				ctx2.closePath();
+			}
+			angle+= (1/60);
 		}
 		window.addEventListener("load",init);
  }());
