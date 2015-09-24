@@ -180,15 +180,16 @@
 		}
 		
 		function drawBottom(g){
-			if( g > 250) {ctx2.strokeStyle = makeColor(0, 0, 0, 0.3);}
-			else if(g > 225){ctx2.strokeStyle = makeColor(g, 0, g, 0.3);}
+			if(g==255){ctx2.strokeStyle = makeColor(255,255,255,0.3);}
+			else if( g > 250) {ctx2.strokeStyle = makeColor(0, 0, 0, 0.3);}
+			else if( g > 225){ctx2.strokeStyle = makeColor(g, 0, g, 0.3);}
 			else if( g > 215) {ctx2.strokeStyle = makeColor(g, g, 0, 0.3);}
-			else if(g > 200){ctx2.strokeStyle = makeColor(0, g, 0, 0.3);}
+			else if( g > 200){ctx2.strokeStyle = makeColor(0, g, 0, 0.3);}
 			else if( g > 195) {ctx2.strokeStyle = makeColor(g, 0, 0, 0.3);}
 			else if( g > 180) {ctx2.strokeStyle = makeColor(0, 0, g, 0.3);}
 			else {ctx2.strokeStyle = makeColor(0, g, g, 0.3);}
 			//ctx2.strokeStyle = makeColor(0, g, 0, 0.3);
-			ctx2.lineWidth = 3;
+			ctx2.lineWidth = 10;
 			for(var i = 0; i < 3; i++){
 				ctx2.beginPath();
 				ctx2.moveTo(canvas2.width/2, canvas2.height / 2);
@@ -196,7 +197,7 @@
 				ctx2.stroke();
 				ctx2.closePath();
 			}
-			angle+= (1/60);
+			angle+= (1/50);
 		}
 		window.addEventListener("load",init);
  }());
