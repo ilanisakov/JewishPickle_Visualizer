@@ -131,13 +131,19 @@
 		function update() {
 			requestAnimationFrame(update);
 			var data = new Uint8Array(NUM_SAMPLES/2);
-			var space = canvas.width / data.length;
-			
 			
 			analyserNode.getByteFrequencyData(data);
 						
 			ctx.clearRect(0,0,1280,800);//clearing the top canvas
 			
+			var temp = data[3];
+			drawBottom(data);
+			drawTop(temp);
+			
+		}
+		
+		function drawBottom(data){
+			var space = canvas.width / data.length;
 			ctx.save();
 			ctx.lineWidth = 3;
 			ctx.strokeStyle = strokeColor;
@@ -158,6 +164,12 @@
 				ctx.stroke();
 				ctx.closePath();
 				
+				//test - lines from wave to middle
+				/*ctx.beginPath();
+				ctx.moveTo(i*space, 750 - data[i]);
+				ctx.lineTo(canvas.width / 2, canvas.height / 2);
+				ctx.stroke();*/
+				
 				//Circle
 				ctx.save();
 				ctx.fillStyle = fillColor;
@@ -170,16 +182,9 @@
 				ctx.restore();
 			}
 			ctx.restore();
-			console.log(data[2] > 250 ? "yes" : "");
-			var temp = data[2];
-			drawBottom(temp);
-			
 		}
 		
-		function drawTop(){
-		}
-		
-		function drawBottom(g){
+		function drawTop(g){
 			if(g==255){ctx2.strokeStyle = makeColor(255,255,255,0.3);}
 			else if( g > 250) {ctx2.strokeStyle = makeColor(0, 0, 0, 0.3);}
 			else if( g > 225){ctx2.strokeStyle = makeColor(g, 0, g, 0.3);}
