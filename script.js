@@ -4,7 +4,7 @@
 		//CONSTANTS
 		var NUM_SAMPLES = 1024;
 		var SCREEN_RADIUS = 755;
-		var SOUND_1 = 'media/Touch The Sky.mp3';
+		var SOUND_1 = 'media/Enjoy the Ride.mp3';
 		
 		//VARIABLES
 		var canvas, ctx, canvas2, ctx2;
@@ -145,7 +145,7 @@
 		function playStream(audioElement,path){
 			audioElement.src = path;
 			audioElement.play();
-			audioElement.volume = 0.2;
+			audioElement.volume = 0.5;
 			//document.querySelector('#status').innerHTML = "Now playing: " + path;
 		}
 		
@@ -215,7 +215,7 @@
 			var j = 0;
 			for(var i = 0; i < data.length; i++)
 			{
-				//default line
+				//default line - audio frequency
 				if (lineBox)
 				{
 					ctx.beginPath();
@@ -248,7 +248,7 @@
 				ctx.stroke();
 				ctx.closePath();
 				
-				//Drawing
+				//Drawing - under construction
 				if(ready)
 				{
 					ctx.beginPath();
@@ -271,7 +271,7 @@
 				ctx.stroke();*/	
 				j+=2;
 				
-				if (circleBox)
+				if (circleBox) //circle
 				{
 					ctx.save();
 					ctx.fillStyle = fillColor;
@@ -303,7 +303,7 @@
 			{
 				for(var i = 0; i < 3; i++){
 					ctx2.beginPath();
-					ctx2.moveTo(canvas2.width/2, canvas2.height / 2);
+					ctx2.moveTo(canvas2.width/2 + Math.cos(angle + (i*90)) * 10, canvas2.height / 2 + Math.sin(angle + (i*90)) * 10);
 					ctx2.lineTo(SCREEN_RADIUS * Math.cos(angle + (i*90)) + canvas2.width / 2, SCREEN_RADIUS * Math.sin(angle + (i*90)) + canvas2.height / 2);
 					ctx2.stroke();
 					ctx2.closePath();
