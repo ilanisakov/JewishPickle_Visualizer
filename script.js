@@ -9,8 +9,9 @@
 		//VARIABLES
 		var canvas, ctx, canvas2, ctx2;
 		var audioElement, analyserNode;
-		var circleRadius, strokeColor, fillColor, angle, thickness, numLines;
 		var drawing, ready, clickLoc, mouseLoc, lines;
+		var circleRadius, strokeColor, fillColor, angle, thickness;
+		var circleBox, lineBox, linesBox, crazyBox;
 		
 		//Init - function called when the page is loaded
 		function init(){
@@ -26,10 +27,13 @@
 			circleRadius = 10;
 			angle=0;
 			thickness = 5;
-			numLines = 3;
 			ready = false;
 			drawing = false;
 			lines = new Uint8Array(100);
+			circleBox = true;
+			lineBox = true;
+			linesBox = true;
+			crazyBox = false;
 			
 			// get reference to <audio> element on page
 			audioElement = document.querySelector('audio');
@@ -115,9 +119,6 @@
 			document.querySelector("#radiusSlider").onchange = function(e){
 				circleRadius = e.target.value * 2;
 			};
-			document.querySelector("#lineSlider").onchange = function(e){
-				numLines = e.target.value;
-			};
 			document.querySelector("#lineThicknessSlider").onchange = function(e){
 				thickness = e.target.value;
 			};
@@ -127,8 +128,18 @@
 			document.querySelector("#ilanButton").onclick = function(e){
 				drawing = true;
 			};
-			
-
+			document.querySelector("#circleBox").onchange = function(e){
+				circleBox = !circleBox;
+			};
+			document.querySelector("#lineBox").onchange = function(e){
+				lineBox = !lineBox;
+			};
+			document.querySelector("#linesBox").onchange = function(e){
+				linesBox = !linesBox;
+			};
+			document.querySelector("#crazyBox").onchange = function(e){
+				crazyBox = !crazyBox;
+			};
 		}
 		
 		function playStream(audioElement,path){
@@ -175,12 +186,6 @@
 			drawing = false;
 		}
 		
-		//function bGColorChange(e)
-		//{
-		//	console.log('bgcolor');
-		//	canvas.style.backgroundColor = e.value;
-		//}
-		
 		//Update Loop
 		function update() {
 			requestAnimationFrame(update);
@@ -190,12 +195,16 @@
 			analyserNode.getByteFrequencyData(data);
 			analyserNode.getByteTimeDomainData(wave);
 						
-			ctx.clearRect(0,0,1280,800);//clearing the top canvas
+			clearCanvas(ctx);//clearing the top canvas
 			
 			var temp = data[3];
 			drawBottom(data, wave);
 			drawTop(temp);
 			
+			if (crazyBox)
+			{
+				changeCanvas(ctx2);
+			}
 		}
 		
 		function drawBottom(data, wave){
@@ -207,19 +216,22 @@
 			for(var i = 0; i < data.length; i++)
 			{
 				//default line
-				ctx.beginPath();
-				ctx.moveTo(i * space, 750 - data[i]);
-				if (i == (NUM_SAMPLES / 2) - 1)
+				if (lineBox)
 				{
-					ctx.lineTo(canvas.width, 750 - data[i]);
+					ctx.beginPath();
+					ctx.moveTo(i * space, 750 - data[i]);
+					if (i == (NUM_SAMPLES / 2) - 1)
+					{
+						ctx.lineTo(canvas.width, 750 - data[i]);
+					}
+					else
+					{
+						ctx.lineTo((i + 1) * space, 750 - data[i + 1]);
+					}
+					//ctx.strokeStyle = makeColor(255,0,0,data[NUM_SAMPLES / 4].map(0,255,0,1));
+					ctx.stroke();
+					ctx.closePath();
 				}
-				else
-				{
-					ctx.lineTo((i + 1) * space, 750 - data[i + 1]);
-				}
-				//ctx.strokeStyle = makeColor(255,0,0,data[NUM_SAMPLES / 4].map(0,255,0,1));
-				ctx.stroke();
-				ctx.closePath();
 				
 				//default line - wave
 				ctx.beginPath();
@@ -256,25 +268,25 @@
 				/*ctx.beginPath();
 				ctx.moveTo(i*space, 750 - data[i]);
 				ctx.lineTo(canvas.width / 2, canvas.height / 2);
-				ctx.stroke();*/
-				
-				//Circle
-				ctx.save();
-				ctx.fillStyle = fillColor;
-				ctx.beginPath();
-				ctx.arc(canvas.width/2, canvas.height/2, circleRadius * (data[i] / 15), 0, Math.PI * 2, false);
-				ctx.fillStyle = makeColor(data[i],0,0,data[i].map(0,255,0,1));
-				//ctx.globalAlpha = data[i].map(0,255,0,1);
-				ctx.fill();
-				ctx.closePath();
-				ctx.restore();
-				
+				ctx.stroke();*/	
 				j+=2;
+				
+				if (circleBox)
+				{
+					ctx.save();
+					ctx.fillStyle = fillColor;
+					ctx.beginPath();
+					ctx.arc(canvas.width/2, canvas.height/2, circleRadius * (data[i] / 15), 0, Math.PI * 2, false);
+					ctx.fillStyle = makeColor(data[i],0,0,data[i].map(0,255,0,1));
+					//ctx.globalAlpha = data[i].map(0,255,0,1);
+					ctx.fill();
+					ctx.closePath();
+					ctx.restore();
+				}
 			}
 			ctx.restore();
 			
 		}
-		
 		
 		function drawTop(g){
 			if(g==255){ctx2.strokeStyle = makeColor(255,255,255,0.3);}
@@ -285,20 +297,37 @@
 			else if( g > 195) {ctx2.strokeStyle = makeColor(g, 0, 0, 0.3);}
 			else if( g > 180) {ctx2.strokeStyle = makeColor(0, 0, g, 0.3);}
 			else {ctx2.strokeStyle = makeColor(0, g, g, 0.3);}
-			//ctx2.strokeStyle = makeColor(0, g, 0, 0.3);
+			
 			ctx2.lineWidth = thickness;
-			for(var i = 0; i < numLines; i++){
-				ctx2.beginPath();
-				ctx2.moveTo(canvas2.width/2, canvas2.height / 2);
-				ctx2.lineTo(SCREEN_RADIUS * Math.cos(angle + (i*(360 / (numLines - 1)))) + canvas2.width / 2, SCREEN_RADIUS * Math.sin(angle + (i*(360 / (numLines - 1)))) + canvas2.height / 2);
-				ctx2.stroke();
-				ctx2.closePath();
+			if (linesBox)
+			{
+				for(var i = 0; i < 3; i++){
+					ctx2.beginPath();
+					ctx2.moveTo(canvas2.width/2, canvas2.height / 2);
+					ctx2.lineTo(SCREEN_RADIUS * Math.cos(angle + (i*90)) + canvas2.width / 2, SCREEN_RADIUS * Math.sin(angle + (i*90)) + canvas2.height / 2);
+					ctx2.stroke();
+					ctx2.closePath();
+				}
 			}
 			angle+= (1/50);
 		}
 		
 		function clearCanvas(ctx){
 			ctx.clearRect(0, 0, 1280, 800);
+		}
+		
+		function changeCanvas(ctx){
+			var imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+			var data = imageData.data;
+			var length = data.length;
+			
+			for (var i = 0; i < length; i+=4)
+			{
+				if (Math.random() < .10){
+					data[i + (Math.floor(Math.random() * 2))] = Math.floor(Math.random() * 255);
+				}
+			}
+			ctx.putImageData(imageData, 0, 0);
 		}
 		window.addEventListener("load",init);
  }());
