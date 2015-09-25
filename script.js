@@ -8,10 +8,11 @@
 		
 		//VARIABLES
 		var canvas, ctx, canvas2, ctx2;
-		var audioElement, analyserNode;
+		var audioElement, analyserNode, filter;
 		var drawing, ready, clickLoc, mouseLoc, lines;
-		var circleRadius, strokeColor, fillColor, angle, thickness;
-		var circleBox, lineBox, linesBox, crazyBox, cutOut;
+		var circleRadius, strokeColor, angle, thickness;
+		var circleBox, lineBox, linesBox, crazyBox;
+		var style;
 		
 		//Init - function called when the page is loaded
 		function init(){
@@ -23,7 +24,6 @@
 			canvas2 = document.querySelector('#bCanvas');
 			ctx2 = canvas2.getContext("2d");
 			strokeColor = 'rgba(0, 255, 0, 0.6)';
-			fillColor = 'rgba(255, 0, 255, 0.6)';
 			circleRadius = 10;
 			angle=0;
 			thickness = 5;
@@ -34,7 +34,7 @@
 			lineBox = true;
 			linesBox = true;
 			crazyBox = false;
-			cutOut = false;
+			style = "one";
 			
 			// get reference to <audio> element on page
 			audioElement = document.querySelector('audio');
@@ -49,6 +49,8 @@
 			playStream(audioElement,SOUND_1);
 			
 			//setup map function
+			//Gotten from http://stackoverflow.com/questions/10756313/javascript-jquery-map-a-range-of-numbers-to-another-range-of-numbers
+			//User: August Miller
 			Number.prototype.map = function (in_min, in_max, out_min, out_max) {
 				return (this - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
 			}
@@ -85,9 +87,13 @@
 			// fft stands for Fast Fourier Transform
 			analyserNode.fftSize = NUM_SAMPLES;
 			
+			filter = audioCtx.createBiquadFilter();
+			
 			// this is where we hook up the <audio> element to the analyserNode
 			sourceNode = audioCtx.createMediaElementSource(audioElement); 
-			sourceNode.connect(analyserNode);
+			//sourceNode.connect(analyserNode);
+			
+			
 						
 			//create DelayNode instance
 			//delayNode = audioCtx.createDelay();
@@ -96,10 +102,12 @@
 			// here we connect to the destination i.e. speakers
 			//analyserNode.connect(audioCtx.destination);
 			
-			sourceNode.connect(audioCtx.destination);
-			//sourceNode.connect(delayNode);
-			//delayNode.connect(analyserNode);
+			sourceNode.connect(filter);
+			filter.connect(analyserNode);
 			analyserNode.connect(audioCtx.destination);
+			
+			filter.type = "lowpass";
+			filter.frequency.value = 20000;
 			return analyserNode;
 		}
 		
@@ -114,11 +122,14 @@
 			document.querySelector("#sColor").onchange = function(e){
 				strokeColor = e.target.value;
 			};
-			document.querySelector("#fColor").onchange = function(e){
-				fillColor = e.target.value;
+			document.querySelector("#style").onchange = function(e){
+				style = e.target.value;
 			};
 			document.querySelector("#radiusSlider").onchange = function(e){
 				circleRadius = e.target.value * 2;
+			};
+			document.querySelector("#lowPassSlider").onchange = function(e){
+				filter.frequency.value = e.target.value;
 			};
 			document.querySelector("#lineThicknessSlider").onchange = function(e){
 				thickness = e.target.value;
@@ -138,12 +149,10 @@
 			document.querySelector("#linesBox").onchange = function(e){
 				linesBox = !linesBox;
 			};
-			document.querySelector("#cutOut").onchange = function(e){
-				cutOut = !cutOut;
-			};
 			document.querySelector("#crazyBox").onchange = function(e){
 				crazyBox = !crazyBox;
 			};
+			
 		}
 		
 		function playStream(audioElement,path){
@@ -201,9 +210,9 @@
 						
 			clearCanvas(ctx);//clearing the top canvas
 			
-			var temp = data[3];
+			
 			drawBottom(data, wave);
-			drawTop(temp);
+			drawTop(data, wave);
 			
 			if (crazyBox)
 			{
@@ -278,7 +287,7 @@
 				if (circleBox) //circle
 				{
 					ctx.save();
-					ctx.fillStyle = fillColor;
+					ctx.fillStyle = makeColor(Math.random().map(0,1,0,255),Math.random().map(0,1,0,255),Math.random().map(0,1,0,255));
 					ctx.beginPath();
 					ctx.arc(canvas.width/2, canvas.height/2, circleRadius * (data[i] / 15), 0, Math.PI * 2, false);
 					ctx.fillStyle = makeColor(data[i],0,0,data[i].map(0,255,0,1));
@@ -292,31 +301,45 @@
 			
 		}
 		
-		function drawTop(g){
-			if(g==255){ctx2.strokeStyle = makeColor(255,255,255,0.3);}
-			else if( g > 250) {ctx2.strokeStyle = makeColor(0, 0, 0, 0.3);}
-			else if( g > 225){ctx2.strokeStyle = makeColor(g, 0, g, 0.3);}
-			else if( g > 215) {ctx2.strokeStyle = makeColor(g, g, 0, 0.3);}
-			else if( g > 200){ctx2.strokeStyle = makeColor(0, g, 0, 0.3);}
-			else if( g > 195) {ctx2.strokeStyle = makeColor(g, 0, 0, 0.3);}
-			else if( g > 180) {ctx2.strokeStyle = makeColor(0, 0, g, 0.3);}
-			else {ctx2.strokeStyle = makeColor(0, g, g, 0.3);}
+		function drawTop(data, wave){
+			//changing colors based off the lower frequencies
+			var g = data[3];
+			if(g==255){ctx2.strokeStyle = makeColor(255,0,0,0.3);}
+			else if( g > 250) {ctx2.strokeStyle = makeColor(255, 128, 0, 0.3);}
+			else if( g > 225){ctx2.strokeStyle = makeColor(255, 255, 0, 0.3);}
+			else if( g > 215) {ctx2.strokeStyle = makeColor(0, 255, 0, 0.3);}
+			else if( g > 200){ctx2.strokeStyle = makeColor(0, 255, 255, 0.3);}
+			else if( g > 195) {ctx2.strokeStyle = makeColor(0, 0, 255, 0.3);}
+			else if( g > 180) {ctx2.strokeStyle = makeColor(127, 0, 255, 0.3);}
+			else {ctx2.strokeStyle = makeColor(0, 0, 0, 0.3);}
 			
 			ctx2.lineWidth = thickness;
 			if (linesBox)
 			{
 				for(var i = 0; i < 3; i++){
 					ctx2.beginPath();
-					if(cutOut)
-						ctx2.moveTo(canvas2.width/2 + Math.cos(angle + (i*90)) * g, canvas2.height / 2 + Math.sin(angle + (i*90)) * g);
-					else
-						ctx2.moveTo(canvas2.width/2, canvas2.height / 2);
+					switch(style){
+						case "one":
+							ctx2.moveTo(canvas2.width/2, canvas2.height / 2);
+							break;
+						case "two":
+							ctx2.moveTo(canvas2.width/2 + Math.cos(angle + (i*90)) * wave[i].map(180,255,0,600), canvas2.height / 2 + Math.sin(angle + (i*90)) * wave[i].map(180,255,0,600));
+							break;
+						case "three":
+							ctx2.moveTo(canvas2.width/2 + Math.cos(angle + (i*90)) * data[i].map(180,255,0,600), canvas2.height / 2 + Math.sin(angle + (i*90)) * data[i].map(180,255,0,600));
+							break;
+						case "four":
+							ctx2.moveTo(canvas2.width/2 + Math.cos(angle + (i*90)) * g, canvas2.height / 2 + Math.sin(angle + (i*90)) * g);
+							break;
+						default:
+								break;
+					}
 					ctx2.lineTo(SCREEN_RADIUS * Math.cos(angle + (i*90)) + canvas2.width / 2, SCREEN_RADIUS * Math.sin(angle + (i*90)) + canvas2.height / 2);
 					ctx2.stroke();
 					ctx2.closePath();
 				}
 			}
-			angle+= (1/50);
+			angle+= (1/70);
 		}
 		
 		function clearCanvas(ctx){

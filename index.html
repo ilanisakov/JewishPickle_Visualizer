@@ -43,37 +43,45 @@
 					</select>
 				</label>
 			</section>
-			<section>
-				<label>Fill Color:
-					<select id="fColor" >
-						<option value="purple">Purple</option>
-						<option value="red">Red</option>
-						<option value="blue">Blue</option>
-						<option value="green">Green</option>
-						<option value="pink">Pink</option>
-					</select>
-				</label>
-			</section>
 		</div>
 		<div>
 			<h2>Effects</h2>
 			<section>
-				<label>Toggles
+				<label>Toggles:
 					<input type="checkbox" id="circleBox" checked>Circle |</input>
 					<input type="checkbox" id="lineBox" checked>Wave Line |</input>
-					<input type="checkbox" id="linesBox" checked>Spinning Lines |</input>
-					<input type="checkbox" id="cutOut">Cut Out |</input>
 					<input type="checkbox" id="crazyBox">Crazy</input>
 				</label>
 			</section>
 			<section>
 				<label>Circle Radius
-					<input id='radiusSlider' type='range' min='0' max='10.0' step='0.5' value='5.0' />
+					<input id='radiusSlider' type='range' min='0' max='10.0' step='0.5' value='5.0' /><br>
+				</label>
+				<label>Low Pass
+					<input id='lowPassSlider' type='range' min='0' max='20000' step='10' value='20000' />
+				</label>
+			</section>
+		</div>
+		<div>
+			<h2>Spinning Lines</h2>
+			<section>
+				<label>Toggles:
+					<input type="checkbox" id="linesBox" checked>Spinning Lines</input>
 				</label>
 			</section>
 			<section>
 				<label>Line Thickness
 					<input id='lineThicknessSlider' type='range' min='1.0' max='10.0' step='1.0' value='5.0' />
+				</label>
+			</section>
+			<section>
+				<label>Style
+					<select id="style" >
+						<option value="one">Style 1</option>
+						<option value="two">Style 2</option>
+						<option value="three">Style 3</option>
+						<option value="four">Style 4</option>
+					</select>
 				</label>
 			</section>
 		</div>
