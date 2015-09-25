@@ -10,10 +10,11 @@
 		var canvas, ctx, canvas2, ctx2;
 		var audioElement, analyserNode;
 		var circleRadius, strokeColor, fillColor, angle, thickness, numLines;
+		var drawing, ready, clickLoc, mouseLoc, lines;
 		
 		//Init - function called when the page is loaded
 		function init(){
-			console.log("test1");
+			console.log("testmouse");
 			
 			// set up canvas stuff
 			canvas = document.querySelector('#canvas');
@@ -26,6 +27,9 @@
 			angle=0;
 			thickness = 5;
 			numLines = 3;
+			ready = false;
+			drawing = false;
+			lines = new Uint8Array(100);
 			
 			// get reference to <audio> element on page
 			audioElement = document.querySelector('audio');
@@ -43,6 +47,12 @@
 			Number.prototype.map = function (in_min, in_max, out_min, out_max) {
 				return (this - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
 			}
+			
+			//Mouse
+			canvas.onmousemove = doMousemove;
+			canvas.onmousedown = doMousedown;
+			canvas.onmouseup = doMouseup;
+			//topCanvas.onmouseout = doMouseout;
 			
 			// start animation loop
 			update();
@@ -115,8 +125,10 @@
 				clearCanvas(ctx2);
 			};
 			document.querySelector("#ilanButton").onclick = function(e){
-				
+				drawing = true;
 			};
+			
+
 		}
 		
 		function playStream(audioElement,path){
@@ -132,6 +144,37 @@
    			return color;
 		}
 		
+		function getMouse(e){
+			var mouse = {}
+			mouse.x = e.pageX - e.target.offsetLeft - 8;
+			mouse.y = e.pageY - e.target.offsetTop - 8;
+			return mouse;
+		}
+		
+		function doMousemove(e) {
+			if(!drawing) return;
+			
+			mouseLoc = getMouse(e);
+				
+			//console.log("x: " + mouse.x + " y: " + mouse.y);
+		}
+		
+		function doMousedown(e){
+			console.log("down");
+			ready = true;
+			clickLoc = getMouse(e);
+			if(drawing){
+				lines[0] = clickLoc.x;
+				lines[1] = clickLoc.y;
+			}
+		}
+		
+		function doMouseup(e){
+			console.log("up");
+			ready = false;
+			drawing = false;
+		}
+		
 		//function bGColorChange(e)
 		//{
 		//	console.log('bgcolor');
@@ -142,22 +185,25 @@
 		function update() {
 			requestAnimationFrame(update);
 			var data = new Uint8Array(NUM_SAMPLES/2);
+			var wave = new Uint8Array(NUM_SAMPLES/2);
 			
 			analyserNode.getByteFrequencyData(data);
+			analyserNode.getByteTimeDomainData(wave);
 						
 			ctx.clearRect(0,0,1280,800);//clearing the top canvas
 			
 			var temp = data[3];
-			drawBottom(data);
+			drawBottom(data, wave);
 			drawTop(temp);
 			
 		}
 		
-		function drawBottom(data){
+		function drawBottom(data, wave){
 			var space = canvas.width / data.length;
 			ctx.save();
 			ctx.lineWidth = 3;
 			ctx.strokeStyle = strokeColor;
+			var j = 0;
 			for(var i = 0; i < data.length; i++)
 			{
 				//default line
@@ -175,6 +221,37 @@
 				ctx.stroke();
 				ctx.closePath();
 				
+				//default line - wave
+				ctx.beginPath();
+				ctx.moveTo(i * space, wave[i]);
+				if (i == (NUM_SAMPLES / 2) - 1)
+				{
+					ctx.lineTo(canvas.width,wave[i]);
+				}
+				else
+				{
+					ctx.lineTo((i + 1) * space, wave[i + 1]);
+				}
+				//ctx.strokeStyle = makeColor(255,0,0,data[NUM_SAMPLES / 4].map(0,255,0,1));
+				ctx.stroke();
+				ctx.closePath();
+				
+				//Drawing
+				if(ready)
+				{
+					ctx.beginPath();
+					ctx.moveTo(lines[j], lines[j+1] + wave[i]);
+					if(drawing)
+					{
+							lines[j+2] = mouseLoc.x;
+							lines[j+3] = mouseLoc.y;
+							ctx.lineTo(lines[j+2], lines[j+3] + wave[i+1]);
+						
+					}
+					ctx.stroke();
+					ctx.closePath();
+				}
+				
 				//test - lines from wave to middle
 				/*ctx.beginPath();
 				ctx.moveTo(i*space, 750 - data[i]);
@@ -191,16 +268,13 @@
 				ctx.fill();
 				ctx.closePath();
 				ctx.restore();
+				
+				j+=2;
 			}
 			ctx.restore();
-
-			var temp = data[3];
-			drawTop(temp);
 			
 		}
 		
-		function drawBottom(){
-		}
 		
 		function drawTop(g){
 			if(g==255){ctx2.strokeStyle = makeColor(255,255,255,0.3);}
