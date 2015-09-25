@@ -18,9 +18,16 @@
 }
 section{
 	padding-bottom: 5px;
+	font-family: 'Jura', sans-serif;
+}
+h1{
+	font-family: 'Jura', sans-serif;
+	font-size: 48px;
+	margin-top: 0px;
 }
 h2{
 	margin-bottom: 3px;
+	font-family: 'Jura', sans-serif;
 }
 #controls{
 	float: right;

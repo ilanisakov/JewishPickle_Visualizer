@@ -16,9 +16,7 @@
 		
 		//Init - function called when the page is loaded
 		function init(){
-			console.log("testmouse");
-			
-			// set up canvas stuff
+			// set up canvas stuff and variables
 			canvas = document.querySelector('#canvas');
 			ctx = canvas.getContext("2d");
 			canvas2 = document.querySelector('#bCanvas');
@@ -56,10 +54,7 @@
 			}
 			
 			//Mouse
-			canvas.onmousemove = doMousemove;
 			canvas.onmousedown = doMousedown;
-			canvas.onmouseup = doMouseup;
-			//topCanvas.onmouseout = doMouseout;
 			
 			// start animation loop
 			update();
@@ -175,28 +170,8 @@
 			return mouse;
 		}
 		
-		function doMousemove(e) {
-			if(!drawing) return;
-			
-			mouseLoc = getMouse(e);
-				
-			//console.log("x: " + mouse.x + " y: " + mouse.y);
-		}
-		
 		function doMousedown(e){
-			console.log("down");
-			ready = true;
-			clickLoc = getMouse(e);
-			if(drawing){
-				lines[0] = clickLoc.x;
-				lines[1] = clickLoc.y;
-			}
-		}
-		
-		function doMouseup(e){
-			console.log("up");
-			ready = false;
-			drawing = false;
+			clearCanvas(ctx2);
 		}
 		
 		//Update Loop
@@ -226,6 +201,8 @@
 			ctx.lineWidth = 3;
 			ctx.strokeStyle = strokeColor;
 			var j = 0;
+			
+			
 			for(var i = 0; i < data.length; i++)
 			{
 				//default line - audio frequency
