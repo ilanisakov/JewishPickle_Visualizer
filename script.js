@@ -9,10 +9,7 @@
 		//VARIABLES
 		var canvas, ctx, canvas2, ctx2;
 		var audioElement, analyserNode;
-		var circleRadius;
-		var strokeColor;
-		var fillColor;
-		var angle;
+		var circleRadius, strokeColor, fillColor, angle, thickness, numLines;
 		
 		//Init - function called when the page is loaded
 		function init(){
@@ -27,6 +24,8 @@
 			fillColor = 'rgba(255, 0, 255, 0.6)';
 			circleRadius = 10;
 			angle=0;
+			thickness = 5;
+			numLines = 3;
 			
 			// get reference to <audio> element on page
 			audioElement = document.querySelector('audio');
@@ -106,6 +105,18 @@
 			document.querySelector("#radiusSlider").onchange = function(e){
 				circleRadius = e.target.value * 2;
 			};
+			document.querySelector("#lineSlider").onchange = function(e){
+				numLines = e.target.value;
+			};
+			document.querySelector("#lineThicknessSlider").onchange = function(e){
+				thickness = e.target.value;
+			};
+			document.querySelector("#clearButton").onclick = function(e){
+				clearCanvas(ctx2);
+			};
+			document.querySelector("#ilanButton").onclick = function(e){
+				
+			};
 		}
 		
 		function playStream(audioElement,path){
@@ -172,14 +183,14 @@
 			ctx.restore();
 			console.log(data[2] > 250 ? "yes" : "");
 			var temp = data[2];
-			drawBottom(temp);
+			drawTop(temp);
 			
 		}
 		
-		function drawTop(){
+		function drawBottom(){
 		}
 		
-		function drawBottom(g){
+		function drawTop(g){
 			if(g==255){ctx2.strokeStyle = makeColor(255,255,255,0.3);}
 			else if( g > 250) {ctx2.strokeStyle = makeColor(0, 0, 0, 0.3);}
 			else if( g > 225){ctx2.strokeStyle = makeColor(g, 0, g, 0.3);}
@@ -189,15 +200,19 @@
 			else if( g > 180) {ctx2.strokeStyle = makeColor(0, 0, g, 0.3);}
 			else {ctx2.strokeStyle = makeColor(0, g, g, 0.3);}
 			//ctx2.strokeStyle = makeColor(0, g, 0, 0.3);
-			ctx2.lineWidth = 10;
-			for(var i = 0; i < 3; i++){
+			ctx2.lineWidth = thickness;
+			for(var i = 0; i < numLines; i++){
 				ctx2.beginPath();
 				ctx2.moveTo(canvas2.width/2, canvas2.height / 2);
-				ctx2.lineTo(SCREEN_RADIUS * Math.cos(angle + (i*90)) + canvas2.width / 2, SCREEN_RADIUS * Math.sin(angle + (i*90)) + canvas2.height / 2);
+				ctx2.lineTo(SCREEN_RADIUS * Math.cos(angle + (i*(360 / (numLines - 1)))) + canvas2.width / 2, SCREEN_RADIUS * Math.sin(angle + (i*(360 / (numLines - 1)))) + canvas2.height / 2);
 				ctx2.stroke();
 				ctx2.closePath();
 			}
 			angle+= (1/50);
+		}
+		
+		function clearCanvas(ctx){
+			ctx.clearRect(0, 0, 1280, 800);
 		}
 		window.addEventListener("load",init);
  }());
