@@ -16,7 +16,7 @@
 	
 	border: 2px solid black;
 }
-section{
+section, p{
 	padding-bottom: 5px;
 	font-family: 'Jura', sans-serif;
 }
@@ -31,5 +31,5 @@ h2{
 }
 #controls{
 	float: right;
-	margin-right: 95px;
+	margin-right: 85px;
 }

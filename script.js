@@ -131,9 +131,6 @@
 			document.querySelector("#lineThicknessSlider").onchange = function(e){
 				thickness = e.target.value;
 			};
-			document.querySelector("#clearButton").onclick = function(e){
-				clearCanvas(ctx2);
-			};
 			document.querySelector("#ilanButton").onclick = function(e){
 				drawing = true;
 			};
