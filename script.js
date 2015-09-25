@@ -11,7 +11,7 @@
 		var audioElement, analyserNode;
 		var drawing, ready, clickLoc, mouseLoc, lines;
 		var circleRadius, strokeColor, fillColor, angle, thickness;
-		var circleBox, lineBox, linesBox, crazyBox;
+		var circleBox, lineBox, linesBox, crazyBox, cutOut;
 		
 		//Init - function called when the page is loaded
 		function init(){
@@ -34,6 +34,7 @@
 			lineBox = true;
 			linesBox = true;
 			crazyBox = false;
+			cutOut = false;
 			
 			// get reference to <audio> element on page
 			audioElement = document.querySelector('audio');
@@ -136,6 +137,9 @@
 			};
 			document.querySelector("#linesBox").onchange = function(e){
 				linesBox = !linesBox;
+			};
+			document.querySelector("#cutOut").onchange = function(e){
+				cutOut = !cutOut;
 			};
 			document.querySelector("#crazyBox").onchange = function(e){
 				crazyBox = !crazyBox;
@@ -303,7 +307,10 @@
 			{
 				for(var i = 0; i < 3; i++){
 					ctx2.beginPath();
-					ctx2.moveTo(canvas2.width/2 + Math.cos(angle + (i*90)) * 10, canvas2.height / 2 + Math.sin(angle + (i*90)) * 10);
+					if(cutOut)
+						ctx2.moveTo(canvas2.width/2 + Math.cos(angle + (i*90)) * g, canvas2.height / 2 + Math.sin(angle + (i*90)) * g);
+					else
+						ctx2.moveTo(canvas2.width/2, canvas2.height / 2);
 					ctx2.lineTo(SCREEN_RADIUS * Math.cos(angle + (i*90)) + canvas2.width / 2, SCREEN_RADIUS * Math.sin(angle + (i*90)) + canvas2.height / 2);
 					ctx2.stroke();
 					ctx2.closePath();
