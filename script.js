@@ -82,6 +82,7 @@
 			// fft stands for Fast Fourier Transform
 			analyserNode.fftSize = NUM_SAMPLES;
 			
+			//creating a new biquad filter
 			filter = audioCtx.createBiquadFilter();
 			
 			// this is where we hook up the <audio> element to the analyserNode
@@ -101,6 +102,7 @@
 			filter.connect(analyserNode);
 			analyserNode.connect(audioCtx.destination);
 			
+			//making the filter a lowpass filter
 			filter.type = "lowpass";
 			filter.frequency.value = 20000;
 			return analyserNode;
@@ -149,7 +151,7 @@
 			};
 			
 		}
-		
+		//Plays the song
 		function playStream(audioElement,path){
 			audioElement.src = path;
 			audioElement.play();
@@ -157,19 +159,19 @@
 			//document.querySelector('#status').innerHTML = "Now playing: " + path;
 		}
 		
-		// HELPER
+		// HELPER, makes a new color
 		function makeColor(red, green, blue, alpha){
    			var color='rgba('+red+','+green+','+blue+', '+alpha+')';
    			return color;
 		}
-		
+		// HELPER, gets the mouse position
 		function getMouse(e){
 			var mouse = {}
 			mouse.x = e.pageX - e.target.offsetLeft - 8;
 			mouse.y = e.pageY - e.target.offsetTop - 8;
 			return mouse;
 		}
-		
+		// HELPER, clears canvas when the canvas is clicked
 		function doMousedown(e){
 			clearCanvas(ctx2);
 		}
@@ -194,7 +196,7 @@
 				changeCanvas(ctx2);
 			}
 		}
-		
+		//draws the bottom canvas
 		function drawBottom(data, wave){
 			var space = canvas.width / data.length;
 			ctx.save();
@@ -218,7 +220,6 @@
 					{
 						ctx.lineTo((i + 1) * space, 750 - data[i + 1]);
 					}
-					//ctx.strokeStyle = makeColor(255,0,0,data[NUM_SAMPLES / 4].map(0,255,0,1));
 					ctx.stroke();
 					ctx.closePath();
 				}
@@ -234,7 +235,6 @@
 				{
 					ctx.lineTo((i + 1) * space, wave[i + 1]);
 				}
-				//ctx.strokeStyle = makeColor(255,0,0,data[NUM_SAMPLES / 4].map(0,255,0,1));
 				ctx.stroke();
 				ctx.closePath();
 				
@@ -259,7 +259,7 @@
 				ctx.moveTo(i*space, 750 - data[i]);
 				ctx.lineTo(canvas.width / 2, canvas.height / 2);
 				ctx.stroke();*/	
-				j+=2;
+				//j+=2;
 				
 				if (circleBox) //circle
 				{
@@ -268,7 +268,6 @@
 					ctx.beginPath();
 					ctx.arc(canvas.width/2, canvas.height/2, circleRadius * (data[i] / 15), 0, Math.PI * 2, false);
 					ctx.fillStyle = makeColor(data[i],0,0,data[i].map(0,255,0,1));
-					//ctx.globalAlpha = data[i].map(0,255,0,1);
 					ctx.fill();
 					ctx.closePath();
 					ctx.restore();
@@ -277,7 +276,7 @@
 			ctx.restore();
 			
 		}
-		
+		//draws the top canvas
 		function drawTop(data, wave){
 			//changing colors based off the lower frequencies
 			var g = data[3];
@@ -318,11 +317,11 @@
 			}
 			angle+= (1/70);
 		}
-		
+		//clears the input canvas
 		function clearCanvas(ctx){
 			ctx.clearRect(0, 0, 1280, 800);
 		}
-		
+		//manipulates the pixels
 		function changeCanvas(ctx){
 			var imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
 			var data = imageData.data;
