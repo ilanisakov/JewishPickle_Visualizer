@@ -6,10 +6,11 @@
 	<link rel="stylesheet" type="text/css" href="style.css" media="screen"/>
 	<link href='https://fonts.googleapis.com/css?family=Jura' rel='stylesheet' type='text/css'>
 	<script src="script.js"></script>
+	<script src="http://connect.soundcloud.com/sdk.js"></script>
 </head>
 <body>
-	<div id="canvas1"><canvas id="bCanvas" width="1280" height="800"></canvas></div>
-	<div id="canvas2"><canvas id="canvas" width="1280" height="800"></canvas></div>
+	<div id="canvas1"><canvas id="bCanvas" width="640" height="480"></canvas></div>
+	<div id="canvas2"><canvas id="canvas" width="640" height="480"></canvas></div>
 	<div id="controls">
 		<h1>Jewish Pickle Visualizer</h1>
 		<audio controls loop></audio>
@@ -91,6 +92,13 @@
 			<button id="ilanButton">Ilan's Button</button><br>
 			<p>Click the canvas to erase the lines</p>
 		</div>
+		<div class="input-group">
+  			<input id="search" type="search" name="search" type="text" class="form-control" placeholder="Add Songs via SoundCloud">
+ 			<span class="input-group-btn">
+    			<button class="btn btn-default btn-search" type="button">Go!</button>
+  			</span>
+		</div>
+<div id="sc-results"></div>
 	</div>
 </body>
 </html>

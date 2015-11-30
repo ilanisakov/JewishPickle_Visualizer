@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8" />
+	<title>Web Audio Soundcloud Test</title>
+	<script src="http://connect.soundcloud.com/sdk.js"></script>
+	<script>
+	(function(){
+		"use strict";
+		function init(){
+
+		var searchTxt = document.getElementById("search");
+
+		SC.initialize({
+			client_id: '8574946907ce2e5b663ad35e651ba3ef',
+			redirect_uri: 'http://people.rit.edu/~ixi7500/330/JewishPickle_VisualizerPlus/index.html'
+		});
+		// find all sounds of kygo
+		SC.get('/tracks', { q: 'kygo' }, function(tracks) {
+			console.log(tracks);
+		});
+		document.getElementById('search').onchange = function(){
+			
+        	var searchData = searchTxt.value;
+        	var searchResult = document.querySelector('#sc-results');
+        	
+        		
+		    var html = "";
+		    var track;
+		     
+		    SC.get('/tracks', {q: searchData, limit: 10 }, function (tracks) {
+		       for (var i = 0; i < tracks.length; i++) 
+		       {
+		                html = html + '<br><div>';
+		                html += "<a class='search-result' href='";
+		                html += tracks[i].permalink_url;
+		                html += "'>";
+		                html += tracks[i].title;
+		                html += "</a>";
+		                html += "</div>";
+
+		                searchResult.innerHTML = html;
+		                track = tracks[0];
+
+		       			SC.stream(track, function(player){
+		    				player.play();
+		 			    });
+		       }
+		    });	    
+
+   		 };
+   		}
+   		window.addEventListener("load",init);
+   	}());
+</script>
+</head>
+<body>
+	<div class="input-group">
+  <input id="search" type="search" name="search" type="text" class="form-control" placeholder="Add Songs via SoundCloud">
+  <span class="input-group-btn">
+    <button class="btn btn-default btn-search" type="button">Go!</button>
+  </span>
+</div>
+<div id="sc-results"></div>
+</body>
+</html>

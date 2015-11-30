@@ -13,6 +13,7 @@
 		var circleRadius, strokeColor, angle, thickness;
 		var circleBox, lineBox, linesBox, crazyBox;
 		var style;
+		var searchTxt;
 		
 		//Init - function called when the page is loaded
 		function init(){
@@ -33,6 +34,15 @@
 			linesBox = true;
 			crazyBox = false;
 			style = "one";
+			searchTxt = document.getElementById("search");
+
+			//Connecting Soundclound 
+			SC.initialize({
+    			client_id: '8574946907ce2e5b663ad35e651ba3ef',
+    			//redirect_uri: 'http://example.com/callback'
+ 		 	});
+
+
 			
 			// get reference to <audio> element on page
 			audioElement = document.querySelector('audio');
@@ -55,6 +65,38 @@
 			
 			//Mouse
 			canvas.onmousedown = doMousedown;
+
+			document.getElementById('search').onchange = function(){
+			
+        	var searchData = searchTxt.value;
+        	var searchResult = document.querySelector('#sc-results');
+        	
+        		
+		    var html = "";
+		    var track;
+		     
+		    SC.get('/tracks', {q: searchData, limit: 10 }, function (tracks) {
+		       for (var i = 0; i < tracks.length; i++) 
+		       {
+		                html = html + '<br><div>';
+		                html += "<a class='search-result' href='";
+		                html += tracks[i].permalink_url;
+		                html += "'>";
+		                html += tracks[i].title;
+		                html += "</a>";
+		                html += "</div>";
+
+		                searchResult.innerHTML = html;
+		                track = tracks[0];
+
+		       			SC.stream(track, function(player){
+		    				player.play();
+		 			    });
+		       }
+		    });	    
+
+   		 };
+
 			
 			// start animation loop
 			update();
