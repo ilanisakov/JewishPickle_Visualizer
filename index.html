@@ -13,15 +13,16 @@
 	<div id="canvas2"><canvas id="canvas" width="640" height="480"></canvas></div>
 	<div id="controls">
 		<h1>Jewish Pickle Visualizer</h1>
-		<audio controls loop></audio>
+		<audio id="player" controls="" autoplay="" preload autobuffer></audio>
 		<section>
-			<label>Track: 
-				<select id="songSelect" >
-					<option value="media/Enjoy the Ride.mp3">Enjoy the Ride</option>
-					<option value="media/New Adventure Theme.mp3">New Adventure Theme</option>
-				</select>
-			</label>
-		</section>
+		<div class="input-group">
+  			<input id="search" type="search" name="search" type="text" class="form-control" placeholder="Add Songs via SoundCloud">
+ 			<span class="input-group-btn">
+    			<button class="btn btn-default btn-search" type="button">Go!</button>
+  			</span>
+		</div>
+		
+	</section>
 		<div>
 			<h2>Colors</h2>
 			<section>
@@ -88,17 +89,11 @@
 				</label>
 			</section>
 		</div>
-		<div>
-			<button id="ilanButton">Ilan's Button</button><br>
-			<p>Click the canvas to erase the lines</p>
+		<section>
+		<h3>Current Song:</h3>
+		<div id="sc-results"></div>
+			
 		</div>
-		<div class="input-group">
-  			<input id="search" type="search" name="search" type="text" class="form-control" placeholder="Add Songs via SoundCloud">
- 			<span class="input-group-btn">
-    			<button class="btn btn-default btn-search" type="button">Go!</button>
-  			</span>
-		</div>
-<div id="sc-results"></div>
-	</div>
+		</section>
 </body>
 </html>

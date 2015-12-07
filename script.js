@@ -13,6 +13,7 @@
 		var circleRadius, strokeColor, angle, thickness;
 		var circleBox, lineBox, linesBox, crazyBox;
 		var style;
+		var client_id;
 		var searchTxt;
 		
 		//Init - function called when the page is loaded
@@ -34,6 +35,7 @@
 			linesBox = true;
 			crazyBox = false;
 			style = "one";
+			client_id = '8574946907ce2e5b663ad35e651ba3ef';
 			searchTxt = document.getElementById("search");
 
 			//Connecting Soundclound 
@@ -49,12 +51,13 @@
 			
 			// call our helper function and get an analyser node
 			analyserNode = createWebAudioContextWithAnalyserNode(audioElement);
+			audioElement.crossOrigin = "anonymous";
 			
 			//Get all our controls working
 			setupUI();
 			
 			// load and play default sound into audio element
-			playStream(audioElement,SOUND_1);
+			//playStream(audioElement,SOUND_1);
 			
 			//setup map function
 			//Gotten from http://stackoverflow.com/questions/10756313/javascript-jquery-map-a-range-of-numbers-to-another-range-of-numbers
@@ -75,25 +78,27 @@
 		    var html = "";
 		    var track;
 		     
-		    SC.get('/tracks', {q: searchData, limit: 10 }, function (tracks) {
+		    SC.get('/tracks', {q: searchData, limit: 1 }, function (tracks) {
 		       for (var i = 0; i < tracks.length; i++) 
 		       {
-		                html = html + '<br><div>';
-		                html += "<a class='search-result' href='";
+		                html = "<div>";
+						html += "<section id='songart'><img src='" + tracks[i].artwork_url + "' height='90' width='90'></section>";
+						html += "<section id='songid'><p>Title:" + tracks[i].title + "</p>";
+						html += "<p>Artist:" + tracks[i].user.username + "</p>";
+						html += "<a class='search-result' href='";
 		                html += tracks[i].permalink_url;
-		                html += "'>";
-		                html += tracks[i].title;
-		                html += "</a>";
+		                html += "'>Link to Song on Soundcloud</a><section>";;
 		                html += "</div>";
 
 		                searchResult.innerHTML = html;
-		                track = tracks[0];
+		                //setTrack(tracks[0]);
 
-		       			SC.stream(track, function(player){
-		    				player.play();
-		 			    });
+		       			
 		       }
-		    });	    
+			   playStream(audioElement, tracks[0].stream_url + '?client_id=' + client_id);
+						console.log(tracks[0].artwork_url);		
+		    });	 
+					
 
    		 };
 
@@ -101,7 +106,6 @@
 			// start animation loop
 			update();
 		}
-		
 		function createWebAudioContextWithAnalyserNode(audioElement) {
 			var audioCtx, analyserNode, sourceNode;
 			// create new AudioContext
@@ -152,9 +156,6 @@
 		
 		//Sets up the functions for the whole UI
 		function setupUI(){
-			document.querySelector("#songSelect").onchange = function(e){
-				playStream(audioElement,e.target.value);
-			};
 			document.querySelector("#bGColor").onchange = function(e){
 				canvas2.style.backgroundColor = e.target.value;
 			};
@@ -172,9 +173,6 @@
 			};
 			document.querySelector("#lineThicknessSlider").onchange = function(e){
 				thickness = e.target.value;
-			};
-			document.querySelector("#ilanButton").onclick = function(e){
-				drawing = true;
 			};
 			document.querySelector("#circleBox").onchange = function(e){
 				circleBox = !circleBox;
