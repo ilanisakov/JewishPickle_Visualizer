@@ -4,7 +4,6 @@
 		//CONSTANTS
 		var NUM_SAMPLES = 1024;
 		var SCREEN_RADIUS = 755;
-		var SOUND_1 = 'media/Enjoy the Ride.mp3';
 		
 		//VARIABLES
 		var canvas, ctx, canvas2, ctx2;
@@ -15,6 +14,9 @@
 		var style;
 		var client_id;
 		var searchTxt;
+		var map;
+		var markers = [];
+		var infoWindow;
 		
 		//Init - function called when the page is loaded
 		function init(){
@@ -56,9 +58,6 @@
 			//Get all our controls working
 			setupUI();
 			
-			// load and play default sound into audio element
-			//playStream(audioElement,SOUND_1);
-			
 			//setup map function
 			//Gotten from http://stackoverflow.com/questions/10756313/javascript-jquery-map-a-range-of-numbers-to-another-range-of-numbers
 			//User: August Miller
@@ -71,37 +70,47 @@
 
 			document.getElementById('search').onchange = function(){
 			
-        	var searchData = searchTxt.value;
-        	var searchResult = document.querySelector('#sc-results');
-        	
-        		
-		    var html = "";
-		    var track;
-		     
-		    SC.get('/tracks', {q: searchData, limit: 1 }, function (tracks) {
-		       for (var i = 0; i < tracks.length; i++) 
-		       {
-		                html = "<div>";
+				var searchData = searchTxt.value;
+				var searchResult = document.querySelector('#sc-results');
+				
+				var html = "";
+				var track;
+				
+				SC.get('/tracks', {q: searchData, limit: 1 }, function (tracks) {
+					for (var i = 0; i < tracks.length; i++) 
+					{
+						html = "<div>";
 						html += "<section id='songart'><img src='" + tracks[i].artwork_url + "' height='90' width='90'></section>";
-						html += "<section id='songid'><p>Title:" + tracks[i].title + "</p>";
-						html += "<p>Artist:" + tracks[i].user.username + "</p>";
+						html += "<section id='songid'><p>Title: " + tracks[i].title + "</p>";
+						html += "<p>Artist: " + tracks[i].user.username + "</p>";
 						html += "<a class='search-result' href='";
-		                html += tracks[i].permalink_url;
-		                html += "'>Link to Song on Soundcloud</a><section>";;
-		                html += "</div>";
-
-		                searchResult.innerHTML = html;
-		                //setTrack(tracks[0]);
-
-		       			
-		       }
-			   playStream(audioElement, tracks[0].stream_url + '?client_id=' + client_id);
-						console.log(tracks[0].artwork_url);		
-		    });	 
+						html += tracks[i].permalink_url;
+						html += "'>Soundcloud Link</a><section>";;
+						html += "</div>";
+		
+						searchResult.innerHTML = html;
+						//setTrack(tracks[0]);
+					}
+					playStream(audioElement, tracks[0].stream_url + '?client_id=' + client_id);
+								console.log(tracks[0].artwork_url);
 					
-
-   		 };
-
+					var url = 'http://api.songkick.com/api/3.0/events.json?apikey=s2EeI13JgZW4rvX8&jsoncallback=?&artist_name=';
+					url += tracks[0].user.username;
+					
+					$.ajax({
+					dataType: "jsonp",
+					url: url,
+					data: null,
+					success: useData
+					});
+				});
+			};
+			
+			var mapOptions = {
+				center: { lat: 39.350033, lng: -92.6500523 },
+				zoom: 4
+			};
+			map = new google.maps.Map(document.getElementById('map'), mapOptions);
 			
 			// start animation loop
 			update();
@@ -193,7 +202,6 @@
 			audioElement.src = path;
 			audioElement.play();
 			audioElement.volume = 0.5;
-			//document.querySelector('#status').innerHTML = "Now playing: " + path;
 		}
 		
 		// HELPER, makes a new color
@@ -372,5 +380,61 @@
 			}
 			ctx.putImageData(imageData, 0, 0);
 		}
+		
+		function useData(obj){
+			console.log(obj);
+			clearMarkers();
+			if (obj.resultsPage.results.event){
+				var allEvents = obj.resultsPage.results.event;
+				for (var i = 0; i < allEvents.length; i++){
+					var event = allEvents[i];
+					
+					var latitude = Number(event.location.lat);
+					var longitude = Number(event.location.lng);
+					if (latitude && longitude){
+						addMarker(latitude, longitude, event.displayName, event.uri);
+					}
+				}
+			}
+			else
+			{
+				makeInfoWindow(map.getCenter(), "No events found :(", "#");
+			}
+		}
+		
+		function addMarker(latitude, longitude, title, link){
+			var position = {lat: latitude, lng: longitude};
+			var marker = new google.maps.Marker({position: position, map: map});
+			marker.setTitle(title);
+			//Add a listener for the click event
+			google.maps.event.addListener(marker, 'click', function(e){
+				makeInfoWindow(this.position, this.title, link);
+			});
+			markers.push(marker);
+		}
+		
+		function makeInfoWindow(position, msg, skLink){
+			//Close old InfoWindow if it exists
+			if (infoWindow){
+				infoWindow.close();
+			}
+			//Make a new InfoWindow
+			infoWindow = new google.maps.InfoWindow({
+				map: map,
+				position: position,
+				content: "<b>" + msg + "</b><br><a href='" + skLink + "'>Link</a>"
+			});
+		}
+		
+		function clearMarkers(){
+			if (infoWindow){
+				infoWindow.close();
+			}
+			for (var i = 0; i < markers.length; ++i){
+				markers[i].setMap(null);
+			}
+			markers = [];
+		}
+		
 		window.addEventListener("load",init);
  }());

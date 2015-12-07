@@ -7,10 +7,14 @@
 	<link href='https://fonts.googleapis.com/css?family=Jura' rel='stylesheet' type='text/css'>
 	<script src="script.js"></script>
 	<script src="http://connect.soundcloud.com/sdk.js"></script>
+	<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC7acORKmdfKEOzF0sXyNo71hQjkwRMs6g"></script>
+	
+	<!-- Import jQuery -->
+	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
 </head>
 <body>
-	<div id="canvas1"><canvas id="bCanvas" width="640" height="480"></canvas></div>
-	<div id="canvas2"><canvas id="canvas" width="640" height="480"></canvas></div>
+	<div id="canvas1"><canvas id="bCanvas" width="1000" height="540"></canvas></div>
+	<div id="canvas2"><canvas id="canvas" width="1000" height="540"></canvas></div>
 	<div id="controls">
 		<h1>Jewish Pickle Visualizer</h1>
 		<audio id="player" controls="" autoplay="" preload autobuffer></audio>
@@ -21,79 +25,81 @@
     			<button class="btn btn-default btn-search" type="button">Go!</button>
   			</span>
 		</div>
-		
-	</section>
-		<div>
-			<h2>Colors</h2>
-			<section>
-				<label>Background Color:
-					<select id="bGColor" >
-						<option value="black">Black</option>
-						<option value="white">White</option>
-						<option value="red">Red</option>
-						<option value="blue">Blue</option>
-						<option value="green">Green</option>
-					</select>
-				</label>
-			</section>
-			<section>
-				<label>Stroke Color:
-					<select id="sColor" >
-						<option value="green">Green</option>
-						<option value="red">Red</option>
-						<option value="blue">Blue</option>
-						<option value="purple">Purple</option>
-						<option value="pink">Pink</option>
-					</select>
-				</label>
-			</section>
-		</div>
-		<div>
-			<h2>Effects</h2>
-			<section>
-				<label>Toggles:
-					<input type="checkbox" id="circleBox" checked>Circle |</input>
-					<input type="checkbox" id="lineBox" checked>Wave Line |</input>
-					<input type="checkbox" id="crazyBox">Crazy</input>
-				</label>
-			</section>
-			<section>
-				<label>Circle Radius
-					<input id='radiusSlider' type='range' min='0' max='10.0' step='0.5' value='5.0' /><br>
-				</label>
-				<label>Low Pass
-					<input id='lowPassSlider' type='range' min='0' max='20000' step='10' value='20000' />
-				</label>
-			</section>
-		</div>
-		<div>
-			<h2>Spinning Lines</h2>
-			<section>
-				<label>Toggles:
-					<input type="checkbox" id="linesBox" checked>Spinning Lines</input>
-				</label>
-			</section>
-			<section>
-				<label>Line Thickness
-					<input id='lineThicknessSlider' type='range' min='1.0' max='10.0' step='1.0' value='5.0' />
-				</label>
-			</section>
-			<section>
-				<label>Style
-					<select id="style" >
-						<option value="one">Style 1</option>
-						<option value="two">Style 2</option>
-						<option value="three">Style 3</option>
-						<option value="four">Style 4</option>
-					</select>
-				</label>
-			</section>
-		</div>
-		<section>
-		<h3>Current Song:</h3>
-		<div id="sc-results"></div>
-			
-		</div>
 		</section>
+	<div>
+		<h2>Colors</h2>
+		<section>
+			<label>Background Color:
+				<select id="bGColor" >
+					<option value="black">Black</option>
+					<option value="white">White</option>
+					<option value="red">Red</option>
+					<option value="blue">Blue</option>
+					<option value="green">Green</option>
+				</select>
+			</label>
+		</section>
+		<section>
+			<label>Stroke Color:
+				<select id="sColor" >
+					<option value="green">Green</option>
+					<option value="red">Red</option>
+					<option value="blue">Blue</option>
+					<option value="purple">Purple</option>
+					<option value="pink">Pink</option>
+				</select>
+			</label>
+		</section>
+	</div>
+	<div>
+		<h2>Effects</h2>
+		<section>
+			<label>Toggles:
+				<input type="checkbox" id="circleBox" checked>Circle |</input>
+				<input type="checkbox" id="lineBox" checked>Wave Line |</input>
+				<input type="checkbox" id="crazyBox">Crazy</input>
+			</label>
+		</section>
+		<section>
+			<label>Circle Radius
+				<input id='radiusSlider' type='range' min='0' max='10.0' step='0.5' value='5.0' /><br>
+			</label>
+			<label>Low Pass
+				<input id='lowPassSlider' type='range' min='0' max='20000' step='10' value='20000' />
+			</label>
+		</section>
+	</div>
+	<div>
+		<h2>Spinning Lines</h2>
+		<section>
+			<label>Toggles:
+				<input type="checkbox" id="linesBox" checked>Spinning Lines</input>
+			</label>
+		</section>
+		<section>
+			<label>Line Thickness
+				<input id='lineThicknessSlider' type='range' min='1.0' max='10.0' step='1.0' value='5.0' />
+			</label>
+		</section>
+		<section>
+			<label>Style
+				<select id="style" >
+					<option value="one">Style 1</option>
+					<option value="two">Style 2</option>
+					<option value="three">Style 3</option>
+					<option value="four">Style 4</option>
+				</select>
+			</label>
+		</section>
+	</div>
+	<section>
+	<h3>Current Song:</h3>
+	<div id="sc-results"></div>
+		
+	</div>
+	</section>
+	
+	<div id="map"></div>
+    
 </body>
 </html>

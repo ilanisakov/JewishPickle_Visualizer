@@ -1,6 +1,6 @@
 #canvas1{
 	opacity: 0.99;
-	position:absolute;
+	position: absolute;
 	z-index:0;
 }
 #canvas2{
@@ -13,7 +13,6 @@
 	border: 2px solid black;
 }
 #canvas{
-	
 	border: 2px solid black;
 }
 section, p{
@@ -41,4 +40,14 @@ h2{
 #songid{
 	
 	float:left;
+}
+
+#map{
+	margin: 0;
+	padding: 0;
+	width: 1000px;
+	height: 380px;
+	border: 1px solid black;
+	position: relative;
+	top: 550px
 }
