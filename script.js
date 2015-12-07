@@ -43,7 +43,6 @@
 			//Connecting Soundclound 
 			SC.initialize({
     			client_id: '8574946907ce2e5b663ad35e651ba3ef',
-    			//redirect_uri: 'http://example.com/callback'
  		 	});
 
 
@@ -71,38 +70,39 @@
 			document.getElementById('search').onchange = function(){
 			
 				var searchData = searchTxt.value;
-				var searchResult = document.querySelector('#sc-results');
+				var searchResult = document.querySelector('#searchResults');
 				
 				var html = "";
 				var track;
 				
-				SC.get('/tracks', {q: searchData, limit: 1 }, function (tracks) {
+				SC.get('/tracks', {q: searchData, limit: 3 }, function (tracks) {
+					html = "<form>";
 					for (var i = 0; i < tracks.length; i++) 
 					{
-						html = "<div>";
-						html += "<section id='songart'><img src='" + tracks[i].artwork_url + "' height='90' width='90'></section>";
-						html += "<section id='songid'><p>Title: " + tracks[i].title + "</p>";
-						html += "<p>Artist: " + tracks[i].user.username + "</p>";
-						html += "<a class='search-result' href='";
-						html += tracks[i].permalink_url;
-						html += "'>Soundcloud Link</a><section>";;
-						html += "</div>";
-		
-						searchResult.innerHTML = html;
-						//setTrack(tracks[0]);
+						//html += "<div>";
+						//html += "<section id='songart'><img src='" + tracks[0].artwork_url + "' height='90' width='90'></section>";
+						//html += "<section id='songid'><p>Title: " + tracks[0].title + "</p>";
+						//html += "<p>Artist: " + tracks[0].user.username + "</p>";
+						//html += "<a class='search-result' href='";
+						//html += tracks[0].permalink_url;
+						//html += "'>Soundcloud Link</a><section>";;
+						//html += "</div>";
+						
+						html += "<input id='song" + i + "' type='radio' name='songs' value='" + tracks[i].stream_url + "' class='" + tracks[i].user.username + "' />" + tracks[i].title + "<br>";
 					}
-					playStream(audioElement, tracks[0].stream_url + '?client_id=' + client_id);
-								console.log(tracks[0].artwork_url);
-					
-					var url = 'http://api.songkick.com/api/3.0/events.json?apikey=s2EeI13JgZW4rvX8&jsoncallback=?&artist_name=';
-					url += tracks[0].user.username;
-					
-					$.ajax({
-					dataType: "jsonp",
-					url: url,
-					data: null,
-					success: useData
-					});
+					html += "</form>";
+					searchResult.innerHTML = html;
+					document.querySelector("#song0").onchange = function(e){											//All of this is very hacky, but it's late, I'm tired, and it works.
+						playSong(document.getElementById("song0").value, document.getElementById("song0").className);
+					};
+					document.querySelector("#song1").onchange = function(e){
+						playSong(document.getElementById("song1").value, document.getElementById("song1").className);
+					};
+					document.querySelector("#song2").onchange = function(e){
+						playSong(document.getElementById("song2").value, document.getElementById("song2").className);
+					};
+					/* playStream(audioElement, tracks[0].stream_url + '?client_id=' + client_id);
+								console.log(tracks[0].artwork_url); */
 				});
 			};
 			
@@ -195,7 +195,70 @@
 			document.querySelector("#crazyBox").onchange = function(e){
 				crazyBox = !crazyBox;
 			};
-			
+			document.querySelector("#saveButton").onclick = function(e){
+				localStorage.setItem("BGColor", canvas2.style.backgroundColor);
+				localStorage.setItem("SColor", strokeColor);
+				localStorage.setItem("Style", style);
+				localStorage.setItem("Radius", circleRadius);
+				localStorage.setItem("LowPass", filter.frequency.value);
+				localStorage.setItem("LineThickness", thickness);
+				if (circleBox){
+					localStorage.setItem("CircleOn", "true");
+				}
+				else{
+					localStorage.setItem("CircleOn", "false");
+				}
+				if (lineBox){
+					localStorage.setItem("WaveOn", "true");
+				}
+				else{
+					localStorage.setItem("WaveOn", "false");
+				}
+				if (linesBox){
+					localStorage.setItem("LinesOn", "true");
+				}
+				else{
+					localStorage.setItem("LinesOn", "false");
+				}
+				if (crazyBox){
+					localStorage.setItem("CrazyOn", "true");
+				}
+				else{
+					localStorage.setItem("CrazyOn", "false");
+				}
+			};
+			document.querySelector("#loadButton").onclick = function(e){
+				canvas2.style.backgroundColor = localStorage.getItem("BGColor");
+				strokeColor = localStorage.getItem("SColor");
+				style = localStorage.getItem("Style");
+				circleRadius = localStorage.getItem("Radius");
+				filter.frequency.value = localStorage.getItem("LowPass");
+				thickness = localStorage.getItem("LineThickness");
+				if (localStorage.getItem("CircleOn") == "true"){
+					circleBox = true;
+				}
+				else if (localStorage.getItem("CircleOn") == "false"){
+					circleBox = false
+				}
+				if (localStorage.getItem("WaveOn") == "true"){
+					lineBox = true;
+				}
+				else if (localStorage.getItem("WaveOn") == "false"){
+					lineBox = false
+				}
+				if (localStorage.getItem("LinesOn") == "true"){
+					linesBox = true;
+				}
+				else if (localStorage.getItem("LinesOn") == "false"){
+					linesBox = false
+				}
+				if (localStorage.getItem("CrazyOn") == "true"){
+					crazyBox = true;
+				}
+				else if (localStorage.getItem("CrazyOn") == "false"){
+					crazyBox = false
+				}
+			}
 		}
 		//Plays the song
 		function playStream(audioElement,path){
@@ -434,6 +497,20 @@
 				markers[i].setMap(null);
 			}
 			markers = [];
+		}
+		
+		function playSong(url, username){
+			playStream(audioElement, url + '?client_id=' + client_id);
+			
+			var url = 'http://api.songkick.com/api/3.0/events.json?apikey=s2EeI13JgZW4rvX8&jsoncallback=?&artist_name=';
+			url += username;
+					
+			$.ajax({
+				dataType: "jsonp",
+				url: url,
+				data: null,
+				success: useData
+			});
 		}
 		
 		window.addEventListener("load",init);

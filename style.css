@@ -51,3 +51,9 @@ h2{
 	position: relative;
 	top: 550px
 }
+
+#searchResults{
+	margin-top: 25px;
+	font-family: 'Jura', sans-serif;
+	font-size: 18px;
+}
