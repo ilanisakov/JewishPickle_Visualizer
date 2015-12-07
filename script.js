@@ -88,10 +88,13 @@
 						//html += "'>Soundcloud Link</a><section>";;
 						//html += "</div>";
 						
+						//Create radio buttons for each track
 						html += "<input id='song" + i + "' type='radio' name='songs' value='" + tracks[i].stream_url + "' class='" + tracks[i].user.username + "' />" + tracks[i].title + "<br>";
 					}
 					html += "</form>";
 					searchResult.innerHTML = html;
+					
+					//Assign functions to play songs on radio button selection
 					document.querySelector("#song0").onchange = function(e){											//All of this is very hacky, but it's late, I'm tired, and it works.
 						playSong(document.getElementById("song0").value, document.getElementById("song0").className);
 					};
@@ -444,6 +447,7 @@
 			ctx.putImageData(imageData, 0, 0);
 		}
 		
+		//Used to parse songkick data and create markers on the map
 		function useData(obj){
 			console.log(obj);
 			clearMarkers();
@@ -465,6 +469,7 @@
 			}
 		}
 		
+		//Add a marker on google maps
 		function addMarker(latitude, longitude, title, link){
 			var position = {lat: latitude, lng: longitude};
 			var marker = new google.maps.Marker({position: position, map: map});
@@ -489,6 +494,7 @@
 			});
 		}
 		
+		//Removes all markers from the map
 		function clearMarkers(){
 			if (infoWindow){
 				infoWindow.close();
@@ -499,6 +505,7 @@
 			markers = [];
 		}
 		
+		//Plays the song assigned to the passed radio button
 		function playSong(url, username){
 			playStream(audioElement, url + '?client_id=' + client_id);
 			
