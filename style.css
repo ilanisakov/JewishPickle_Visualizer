@@ -56,4 +56,12 @@ h2{
 	margin-top: 25px;
 	font-family: 'Jura', sans-serif;
 	font-size: 18px;
+	height: 5px;
+	background-color: #000;
+}
+#logos{
+	margin-top: 10px;
+}
+#sclogo{
+	margin-left: 10px;
 }

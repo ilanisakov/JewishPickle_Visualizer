@@ -11,6 +11,30 @@
 	
 	<!-- Import jQuery -->
 	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+	<script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
+	<script>
+		$(function()	{
+			var vis = true;
+			$("#searchB").click(function(){
+				$("#searchResults").animate({
+					backgroundColor: "gray",
+					color: "#fff",
+					height: 60
+				}, 1000);
+			});
+			$("#visibility").click(function(){
+				var options = {};
+				if(vis){
+					$("#map").hide("fold",options, 1000, callback);
+					vis = false;
+				} else {
+					$("#map").effect("slide",options,1000,callback);
+					vis = true;
+				}
+			});
+			function callback(){}
+		});
+	</script>
 </head>
 <body>
 	<div id="canvas1"><canvas id="bCanvas" width="1000" height="540"></canvas></div>
@@ -22,7 +46,7 @@
 		<div class="input-group">
   			<input id="search" type="search" name="search" type="text" class="form-control" placeholder="Add Songs via SoundCloud">
  			<span class="input-group-btn">
-    			<button class="btn btn-default btn-search" type="button">Go!</button>
+    			<button id="searchB" class="btn btn-default btn-search" type="button">Go!</button>
   			</span>
 		</div>
 		<div id="searchResults">
@@ -96,6 +120,11 @@
 	</div>
 	<button id="saveButton" type="button">Save Settings</button>
 	<button id="loadButton" type="button">Load Settings</button>
+	<button id="visibility" type="button">Hide/Show Map</button>
+	<div id="logos">
+	<img src="media/sklogo.png" width="50" height="50">
+	<img id="sclogo" src="media/soundcloudlogo.png" width="60" height="50">
+	</div>
 	<!-- <section>
 	<h3>Current Song:</h3>
 	<div id="sc-results"></div>
